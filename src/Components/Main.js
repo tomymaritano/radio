@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   Box,
   Text,
@@ -29,7 +30,7 @@ const RadioBrowser = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [limit] = useState(10); // Número de estaciones por página
+  const [limit] = useState(20); // Número de estaciones por página
   const [offset, setOffset] = useState(0); // Punto de inicio para la carga de estaciones
   const [favorites, setFavorites] = useState(() => {
     // Cargar favoritos del almacenamiento local al iniciar
@@ -38,15 +39,20 @@ const RadioBrowser = () => {
     console.log("Cargando favoritos", localData);
     return localData ? JSON.parse(localData) : [];
   });
-useEffect(() => {
-  fetch("https://de1.api.radio-browser.info/json/countries")
-    .then((response) => response.json())
-    .then((data) => {
-      setCountries(data.map(country => ({ name: country.name, id: country.stationcount }))); // Asumiendo que quieres usar `stationcount` como id, ajusta según sea necesario
-    })
-    .catch((error) => console.error("Error fetching countries:", error));
-}, []);
 
+  useEffect(() => {
+    fetch("https://de1.api.radio-browser.info/json/countries")
+      .then((response) => response.json())
+      .then((data) => {
+        setCountries(
+          data.map((country) => ({
+            name: country.name,
+            id: country.stationcount,
+          }))
+        ); // Asumiendo que quieres usar `stationcount` como id, ajusta según sea necesario
+      })
+      .catch((error) => console.error("Error fetching countries:", error));
+  }, []);
 
   const toast = useToast();
   const defaultImage =
@@ -57,7 +63,6 @@ useEffect(() => {
     fetch("https://de1.api.radio-browser.info/json/countries")
       .then((response) => response.json())
       .then((data) => {
-
         setCountries(data);
       })
       .catch((error) => console.error("Error fetching countries:", error));
@@ -101,50 +106,52 @@ useEffect(() => {
     setIsPlaying(""); // Restablece el estado de reproducción
   };
 
-const toggleFavorite = (station) => {
-  const isFavorite = favorites.some(fav => fav.stationuuid === station.stationuuid);
-  let updatedFavorites;
-  if (isFavorite) {
-    updatedFavorites = favorites.filter(fav => fav.stationuuid !== station.stationuuid);
-  } else {
-    updatedFavorites = [...favorites, station];
-  }
-  setFavorites(updatedFavorites);
-  localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-  console.log(updatedFavorites)
-};
+  const toggleFavorite = (station) => {
+    const isFavorite = favorites.some(
+      (fav) => fav.stationuuid === station.stationuuid
+    );
+    let updatedFavorites;
+    if (isFavorite) {
+      updatedFavorites = favorites.filter(
+        (fav) => fav.stationuuid !== station.stationuuid
+      );
+    } else {
+      updatedFavorites = [...favorites, station];
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    console.log(updatedFavorites);
+  };
 
-useEffect(() => {
-  // Solo busca estaciones si no estamos mostrando favoritos
-  if (!showFavorites) {
-    const handleSearch = () => {
-      let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${limit}&offset=${offset}&`;
+  useEffect(() => {
+    // Solo busca estaciones si no estamos mostrando favoritos
+    if (!showFavorites) {
+      const handleSearch = () => {
+        let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${limit}&offset=${offset}&`;
 
-      if (selectedCountry) {
-        searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
-      }
+        if (selectedCountry) {
+          searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
+        }
 
-      if (searchTerm) {
-        searchUrl += `name=${encodeURIComponent(searchTerm)}`;
-      }
+        if (searchTerm) {
+          searchUrl += `name=${encodeURIComponent(searchTerm)}`;
+        }
 
-      fetch(searchUrl)
-        .then(response => response.json())
-        .then(data => {
-          setStations(data);
-        })
-        .catch(error => console.error("Error fetching stations:", error));
-    };
+        fetch(searchUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            setStations(data);
+          })
+          .catch((error) => console.error("Error fetching stations:", error));
+      };
 
-    const timerId = setTimeout(() => {
-      handleSearch();
-    }, 500);
+      const timerId = setTimeout(() => {
+        handleSearch();
+      }, 500);
 
-    return () => clearTimeout(timerId);
-  }
-}, [searchTerm, selectedCountry, showFavorites, limit, offset]);
-
-
+      return () => clearTimeout(timerId);
+    }
+  }, [searchTerm, selectedCountry, showFavorites, limit, offset]);
 
   // Primero, filtra las estaciones según el término de búsqueda.
   const filteredBySearchTerm = searchTerm
@@ -154,22 +161,29 @@ useEffect(() => {
     : stations;
 
   // Luego, de ese conjunto filtrado, elige mostrar todas o solo las favoritas según el estado de showFavorites.
-// Decide qué estaciones mostrar
-const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
+  // Decide qué estaciones mostrar
+  const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
 
   return (
     <ChakraProvider>
       <Box
-        padding="4"
+        
         maxW="100%"
+        position={'sticky'}
+        overflow={'scroll'}
+    height="100vh"
         borderWidth="1px"
         borderRadius="lg"
-        overflow="hidden"
-        bg="gray.50"
+        bg="#1A1A1A"
       >
         {" "}
-        <Container maxW={"4xl"}>
-          <HStack spacing={5}>
+        <Container maxW={"4xl"} bgColor={"#d1e500"} p={4} position={'sticky'} top={0} zIndex={3}>
+          <Box
+            display={"flex"}
+            alignItems={"center"}
+            justifyContent={"space-evenly"}
+            spacing={1}
+          >
             <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="favorites-switch" mb="0">
                 Favoritos
@@ -194,31 +208,45 @@ const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
                 {/* Menú desplegable para seleccionar país */}
                 <FormControl>
                   <Select
+                    w={"100%"}
+                    bg={"white"}
                     size={"sm"}
                     placeholder="Seleccione un país"
                     onChange={(e) => setSelectedCountry(e.target.value)}
                     value={selectedCountry}
                   >
-                    {countries.map((country) => (
-                      <option key={country.id} value={country.name}>
-                        {country.name}
-                      </option>
-                    ))}
+                    {countries
+                      // Filtra países sin nombre
+                      .filter((country) => country.name)
+                      // Elimina duplicados basándose en el nombre del país
+                      .filter(
+                        (country, index, self) =>
+                          index ===
+                          self.findIndex((c) => c.name === country.name)
+                      )
+                      // Ordena los países restantes alfabéticamente
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((country) => (
+                        <option key={country.stationuuid} value={country.name}>
+                          {country.name}
+                        </option>
+                      ))}
                   </Select>
                 </FormControl>
                 {/* Continúa con los demás elementos de UI como antes... */}
               </VStack>
             </Container>
-          </HStack>
+          </Box>
         </Container>
-        <Container maxW={"4xl"}>
+        <Container maxW={"4xl"} bg={"whiteAlpha.100"}>
           <Box p={4} color={"red"}>
             <ReactPlayer
               url={currentStationUrl}
               playing={isPlaying !== ""}
-              controls
+              style={{ bg: "black" }}
               width="100%"
-              height="50px"
+              border={"1px solid red"}
+              height="0px"
               onEnded={handlePlaybackEnded}
               onError={() => handlePlaybackEnded()} // Opcionalmente maneja errores de la misma manera
             />
@@ -230,8 +258,15 @@ const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
                 borderRadius={"6px"}
                 key={station.stationuuid}
                 p="5"
-                bg="white"
+                bg="#212121"
+                color={"white"}
                 gap={2}
+                _hover={{
+                  bg: "whiteAlpha.300",
+                  color: "#1a1a1a",
+                  textDecoration: "underline",
+                }}
+                transition="all 0.2s ease-in-out"
                 width="full"
                 display={"flex"}
                 alignItems={"center"}
@@ -257,10 +292,16 @@ const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
                   {/* Otros elementos de la estación */}
                 </Box>
                 <HStack>
-                  <Button
-                    size={"sm"}
-                    colorScheme={
-                      isPlaying === station.stationuuid ? "red" : "teal"
+                  <IconButton
+                    rounded={"full"}
+                    size={"md"}
+                    _hover={{
+                      bg: "#1a1a1a",
+                      color: "#d1e500",
+                      transform: "matrix(1.1, 0, 0, 1.1, 0, 0)",
+                    }}
+                    bg={
+                      isPlaying === station.stationuuid ? "#f4fc99" : "#D1E500"
                     }
                     onClick={() => {
                       if (isPlaying === station.stationuuid) {
@@ -274,12 +315,21 @@ const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
                       }
                     }}
                   >
-                    {isPlaying === station.stationuuid ? <FaStop /> : <FaPlay />}
-                  </Button>
+                    {isPlaying === station.stationuuid ? (
+                      <FaStop />
+                    ) : (
+                      <FaPlay />
+                    )}
+                  </IconButton>
 
                   <IconButton
                     bg={"none"}
                     size={"sm"}
+                    _hover={{
+                      bg: "transparent",
+                      transform: "rotate(360deg) scale(1.5)", // Combina rotación y escalado
+                    }}
+                    transition="transform 0.5s ease-in-out" // Aplica una transición suave}}
                     aria-label="Favorite"
                     icon={<StarIcon />}
                     color={
@@ -292,13 +342,17 @@ const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
                     onClick={() => toggleFavorite(station)}
                   />
                 </HStack>
-                
               </Box>
             ))}
           </SimpleGrid>
-<Button colorScheme="red" m={4} onClick={() => setOffset(offset + limit)}>Cargar más</Button>
+          <Button
+            colorScheme="red"
+            m={4}
+            onClick={() => setOffset(offset + limit)}
+          >
+            Cargar más
+          </Button>
         </Container>
-        
       </Box>
     </ChakraProvider>
   );
