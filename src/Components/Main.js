@@ -29,7 +29,7 @@ const RadioBrowser = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [limit, setLimit] = useState(10); // Número de estaciones por página
+  const [limit] = useState(10); // Número de estaciones por página
   const [offset, setOffset] = useState(0); // Punto de inicio para la carga de estaciones
   const [favorites, setFavorites] = useState(() => {
     // Cargar favoritos del almacenamiento local al iniciar
@@ -111,38 +111,37 @@ const toggleFavorite = (station) => {
   }
   setFavorites(updatedFavorites);
   localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-};
-
-  const handleSearch = (searchTerm) => {
-  // Define el número de estaciones por página y reinicia a la primera página
-  const stationsPerPage = 20;
-  const offset = 0; // Comienza desde el principio para una nueva búsqueda
-  
-  let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${stationsPerPage}&offset=${offset}&`;
-
-  if (selectedCountry) {
-    searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
-  }
-
-  if (searchTerm) {
-    searchUrl += `name=${encodeURIComponent(searchTerm)}`;
-  }
-
-  fetch(searchUrl)
-    .then(response => response.json())
-    .then(data => {
-      setStations(data);
-      // Opcional: Actualizar la UI para reflejar que es una búsqueda y no la lista completa
-    })
-    .catch(error => console.error("Error fetching stations:", error));
+  console.log(updatedFavorites)
 };
 useEffect(() => {
+  const handleSearch = (searchTerm) => {
+    const stationsPerPage = 20;
+    const offset = 0;
+  
+    let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${stationsPerPage}&offset=${offset}&`;
+  
+    if (selectedCountry) {
+      searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
+    }
+  
+    if (searchTerm) {
+      searchUrl += `name=${encodeURIComponent(searchTerm)}`;
+    }
+  
+    fetch(searchUrl)
+      .then(response => response.json())
+      .then(data => {
+        setStations(data);
+      })
+      .catch(error => console.error("Error fetching stations:", error));
+  };
+
   const timerId = setTimeout(() => {
     handleSearch(searchTerm);
   }, 500);
 
   return () => clearTimeout(timerId);
-}, [searchTerm]);
+}, [searchTerm, selectedCountry]);
 
 
   // Primero, filtra las estaciones según el término de búsqueda.
