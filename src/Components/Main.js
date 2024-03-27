@@ -19,7 +19,6 @@ import {
   Select,
   theme,
 } from "@chakra-ui/react";
-import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
 import { FaPlay, FaStop } from "react-icons/fa";
 
@@ -360,6 +359,7 @@ const RadioBrowser = () => {
             ))}
           </SimpleGrid>
           <Button
+          size={'sm'}
             colorScheme="purple"
             m={4}
             onClick={() => setOffset(offset + limit)}
