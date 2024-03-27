@@ -8,6 +8,7 @@ import {
   useToast,
   IconButton,
   ChakraProvider,
+  Container,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
@@ -25,7 +26,7 @@ const RadioBrowser = () => {
 
   useEffect(() => {
     fetch(
-      "http://de1.api.radio-browser.info/json/stations/bycountrycodeexact/ar?limit=20"
+      "https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/ar?limit=20"
     )
       .then((response) => {
         if (!response.ok) {
@@ -57,6 +58,8 @@ const RadioBrowser = () => {
       // Si ya es favorito, lo removemos de la lista de favoritos.
       const updatedFavorites = favorites.filter((fav) => fav.id !== station.id);
       setFavorites(updatedFavorites);
+      console.log("Toggling favorite for station", station.id);
+
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     } else {
       // Si no es favorito, lo agregamos a la lista de favoritos.
@@ -69,14 +72,16 @@ const RadioBrowser = () => {
   return (
     <ChakraProvider>
       <Box
+  
         padding="4"
         maxW="xl"
         borderWidth="1px"
         borderRadius="lg"
         overflow="hidden"
-        bg="gray.50"
+        bg="black"
       >
-        <Heading as="h3" size="lg" mb="4">
+        <Container>
+          <Heading textAlign={'center'} as="h3" size="lg" mb="4">
           Tomillo radio
         </Heading>
         <ReactPlayer
@@ -89,7 +94,7 @@ const RadioBrowser = () => {
         <VStack spacing="4" mt="4">
           {stations.map((station) => (
             <Box
-              key={station.id}
+              key={station.changeuuid}
               p="5"
               shadow="md"
               borderWidth="1px"
@@ -101,27 +106,30 @@ const RadioBrowser = () => {
               <Button
                 mr={1}
                 size={"sm"}
-                colorScheme={isPlaying === station.id ? "red" : "blue"}
-                onClick={() => playStation(station.url, station.id)}
+                colorScheme={isPlaying === station.changeuuid ? "red" : "blue"}
+                onClick={() => playStation(station.url, station.changeuuid)}
                 mt="2"
               >
-                {isPlaying === station.id ? "Playing" : "Play"}
+                {isPlaying === station.changeuuid ? "Playing" : "Play"}
               </Button>
               <IconButton
               size={'sm'}
                 aria-label="Favorite"
                 icon={<StarIcon />}
                 colorScheme={
-                  favorites.some((fav) => fav.id === station.id)
+                  favorites.some((fav) => fav.changeuuid === station.changeuuid)
                     ? "yellow"
                     : "gray"
                 }
                 onClick={() => toggleFavorite(station)}
                 mt="2"
               />
+              
             </Box>
           ))}
         </VStack>
+        </Container>
+        
       </Box>
     </ChakraProvider>
   );
