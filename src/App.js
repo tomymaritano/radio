@@ -1,79 +1,97 @@
-import React, { useState } from "react"; // Importa useState
-import ReactPlayer from "react-player"; // Asegúrate de que ReactPlayer esté importado correctamente
-import { Box, ChakraProvider, Container, Select } from "@chakra-ui/react"; // Asegúrate de que ChakraProvider esté importado correctamente
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Text,
+  HStack,
+  Heading,
+  Button,
+  useToast,
+  ChakraProvider,
+  VStack,
+} from "@chakra-ui/react";
+import ReactPlayer from "react-player";
 
-function App() {
-  const radios = [
-    {
-      name: "Classic FM",
-      url: "http://media-ice.musicradio.com/ClassicFMMP3",
-      img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
-    },
-    {
-      name: "KEXP 90.3 FM",
-      url: "http://live-mp3-128.kexp.org/kexp128.mp3",
-      img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
-    },
-    {
-      name: "BBC Radio 1",
-      url: "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_p",
-      img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
-    },
-    {
-      name: "Radio Swiss Jazz",
-      url: "http://stream.srg-ssr.ch/m/rsj/mp3_128",
-      img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
-    },
-    {
-      name: "WFMU",
-      url: "http://stream0.wfmu.org/freeform-128k",
-      img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
-    },
-    {
-      name: "Music For Work",
-      url: "https://www.youtube.com/watch?v=ofXre8MuI9A",
-    },
-    {
-      name: "Deep Music",
-      url: "https://www.youtube.com/watch?v=8onzNnr5Z9o",
-    },
-    { name: "Chill Music", url: "https://www.youtube.com/watch?v=UbEpM-VwOU8" },
-  ];
+const RadioBrowser = () => {
+  const [stations, setStations] = useState([]);
+  const [currentStationUrl, setCurrentStationUrl] = useState("");
+  const [isPlaying, setIsPlaying] = useState("");
+  const toast = useToast();
 
-  const [currentRadioUrl, setCurrentRadioUrl] = useState(radios[0].url); // Estado para manejar la URL de la radio actual
+  useEffect(() => {
+    fetch(
+      "http://de1.api.radio-browser.info/json/stations/bycountrycodeexact/ar?limit=20"
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => setStations(data))
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        toast({
+          title: "Error fetching stations",
+          description: "Couldn't retrieve stations. Please try again later.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      });
+  }, [toast]);
 
-  const handleRadioChange = (event) => {
-    const url = event.target.value;
-    setCurrentRadioUrl(url);
+  const playStation = (url, id) => {
+    setCurrentStationUrl(url);
+    setIsPlaying(id);
   };
 
   return (
     <ChakraProvider>
       <Box
-        bg={"white"}
-        height={"100vh"}
-        p={4}
-        display={"flex"}
-        flexDir={"column"}
+        padding="4"
+        maxW="xl"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+        bg="gray.50"
       >
-        <Container>
-          <Select
-            bg={"tomato"}
-            onChange={handleRadioChange}
-            value={currentRadioUrl}
-          >
-            {radios.map((radio, index) => (
-              <option key={index} value={radio.url}>
-                {radio.name}
-              </option>
-            ))}
-          </Select>
-
-          <ReactPlayer url={currentRadioUrl} playing controls width="100%" />
-        </Container>
+        <Heading as="h3" size="lg" mb="4">
+          Radio Stations
+        </Heading>
+        {/* ReactPlayer Component */}
+        <ReactPlayer
+          url={currentStationUrl}
+          playing
+          controls
+          width="100%"
+          height="50px"
+        />
+        <VStack spacing="4" mt="4">
+          {stations.map((station) => (
+            <Box
+              key={station.id}
+              p="5"
+              shadow="md"
+              borderWidth="1px"
+              bg="white"
+              width="full"
+            >
+              <Text fontWeight="bold" fontSize={'sm'}>{station.name}</Text>
+            
+              <Button
+              size={'sm'}
+                colorScheme={isPlaying === station.id ? "red" : "blue"}
+                onClick={() => playStation(station.url, station.id)}
+                mt="2"
+              >
+                {isPlaying === station.id ? "Playing" : "Play"}
+              </Button>
+            </Box>
+          ))}
+        </VStack>
       </Box>
     </ChakraProvider>
   );
-}
+};
 
-export default App;
+export default RadioBrowser;
