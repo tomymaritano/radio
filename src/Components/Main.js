@@ -225,7 +225,7 @@ useEffect(() => {
             />
           </Box>
 
-          <SimpleGrid columns={[1]} spacing={4}>
+          <SimpleGrid columns={[1, 2]} spacing={4}>
             {stationsToShow.map((station) => (
               <Box
                 borderRadius={"6px"}
@@ -261,21 +261,21 @@ useEffect(() => {
                   <Button
                     size={"sm"}
                     colorScheme={
-                      isPlaying === station.changeuuid ? "red" : "teal"
+                      isPlaying === station.stationuuid ? "red" : "teal"
                     }
                     onClick={() => {
-                      if (isPlaying === station.changeuuid) {
+                      if (isPlaying === station.stationuuid) {
                         // Si se está reproduciendo esta estación, detén la reproducción.
                         setCurrentStationUrl("");
                         setIsPlaying(null);
                       } else {
                         // Si no se está reproduciendo esta estación, inicia la reproducción.
                         setCurrentStationUrl(station.url);
-                        setIsPlaying(station.changeuuid);
+                        setIsPlaying(station.stationuuid);
                       }
                     }}
                   >
-                    {isPlaying === station.changeuuid ? <FaStop /> : <FaPlay />}
+                    {isPlaying === station.stationuuid ? <FaStop /> : <FaPlay />}
                   </Button>
 
                   <IconButton
@@ -285,7 +285,7 @@ useEffect(() => {
                     icon={<StarIcon />}
                     color={
                       favorites.some(
-                        (fav) => fav.changeuuid === station.changeuuid
+                        (fav) => fav.stationuuid === station.stationuuid
                       )
                         ? "yellow.500"
                         : "gray"
@@ -297,7 +297,7 @@ useEffect(() => {
               </Box>
             ))}
           </SimpleGrid>
-<Button m={4} onClick={() => setOffset(offset + limit)}>Cargar más</Button>
+<Button colorScheme="red" m={4} onClick={() => setOffset(offset + limit)}>Cargar más</Button>
         </Container>
         
       </Box>
