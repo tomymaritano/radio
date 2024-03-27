@@ -23,7 +23,6 @@ import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
 import { FaPlay, FaStop } from "react-icons/fa";
 
-
 const RadioBrowser = () => {
   const [stations, setStations] = useState([]);
   const [currentStationUrl, setCurrentStationUrl] = useState("");
@@ -189,9 +188,9 @@ const RadioBrowser = () => {
           <Box
             display="flex"
             flexDirection={{ base: "column", md: "row" }} // 'base' es para móviles, 'md' es para tablets y arriba
-             gap={{ base: "5", md: "2" }} // Añade más espacio en móvil y menos en pantallas más grandes
- justifyContent={{ base: "flex-start", md: "space-evenly" }} // Alinea al comienzo en móviles, distribuye de forma equitativa en pantallas más grandes
-      alignItems={{ base: "flex-start", md: "center" }} // Alinea al comienzo en móviles, centra en pantallas más grandes
+            gap={{ base: "5", md: "2" }} // Añade más espacio en móvil y menos en pantallas más grandes
+            justifyContent={{ base: "flex-start", md: "space-evenly" }} // Alinea al comienzo en móviles, distribuye de forma equitativa en pantallas más grandes
+            alignItems={{ base: "flex-start", md: "center" }} // Alinea al comienzo en móviles, centra en pantallas más grandes
             width="100%"
           >
             <FormControl display="flex" alignItems="center">
@@ -253,7 +252,7 @@ const RadioBrowser = () => {
         </Container>
         <Container maxW={"4xl"} bg={"whiteAlpha.100"}>
           <Box p={4} color={"red"}>
-            <ReactPlayer
+            <audio
               url={currentStationUrl}
               playing={isPlaying !== ""}
               controls
