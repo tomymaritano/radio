@@ -180,20 +180,22 @@ const RadioBrowser = () => {
         {" "}
         <Container
           maxW={"4xl"}
-          bgColor={"#d1e500"}
-          p={4}
+          bgColor={"#212121"}
+          p={8}
           position={"sticky"}
           top={0}
           zIndex={3}
         >
           <Box
-            display={"flex"}
-            alignItems={"center"}
-            justifyContent={"space-evenly"}
-            spacing={1}
+            display="flex"
+            flexDirection={{ base: "column", md: "row" }} // 'base' es para móviles, 'md' es para tablets y arriba
+             gap={{ base: "5", md: "2" }} // Añade más espacio en móvil y menos en pantallas más grandes
+ justifyContent={{ base: "flex-start", md: "space-evenly" }} // Alinea al comienzo en móviles, distribuye de forma equitativa en pantallas más grandes
+      alignItems={{ base: "flex-start", md: "center" }} // Alinea al comienzo en móviles, centra en pantallas más grandes
+            width="100%"
           >
             <FormControl display="flex" alignItems="center">
-              <FormLabel htmlFor="favorites-switch" mb="0">
+              <FormLabel htmlFor="favorites-switch" mb="0" color={"white"}>
                 Favoritos
               </FormLabel>
               <Switch
@@ -204,11 +206,9 @@ const RadioBrowser = () => {
             </FormControl>
             <FormControl>
               <Input
-               bg={'white'}
-       
+                bg={"white"}
                 size={"sm"}
                 border={0}
-
                 placeholder="Buscar estación..."
                 _placeholder={{ color: "black" }}
                 value={searchTerm}
@@ -222,7 +222,6 @@ const RadioBrowser = () => {
                   <Select
                     w={"100%"}
                     bg={"white"}
-             
                     border={0}
                     size={"sm"}
                     placeholder="Seleccione un país"
@@ -257,7 +256,7 @@ const RadioBrowser = () => {
             <ReactPlayer
               url={currentStationUrl}
               playing={isPlaying !== ""}
-              controls 
+              controls
               style={{ bg: "black" }}
               width="100%"
               border={"1px solid red"}
@@ -302,7 +301,9 @@ const RadioBrowser = () => {
                     />
                   )}
 
-                  <Text fontSize={'sm'} ml="4">{station.name}</Text>
+                  <Text fontSize={"sm"} ml="4">
+                    {station.name}
+                  </Text>
                   {/* Otros elementos de la estación */}
                 </Box>
                 <HStack>
@@ -365,7 +366,6 @@ const RadioBrowser = () => {
             onClick={() => setOffset(offset + limit)}
           >
             Cargar más
-
           </Button>
         </Container>
       </Box>
