@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import ReactPlayer from 'react-player';
 
-const RadioPlayer = ({ url }) => {
+function RadioPlayer() {
   const [playing, setPlaying] = useState(false);
+  const streamUrl = 'http://stream.srg-ssr.ch/m/rsj/mp3_128'; // Sustituye esto con la URL de tu flujo de radio
 
-  useEffect(() => {
-    const player = document.getElementById('radioPlayer');
-    playing ? player.play() : player.pause();
-  }, [playing]);
 
   return (
     <div>
-      <audio id="radioPlayer" src={url} />
-      <button onClick={() => setPlaying(!playing)}>
-        {playing ? 'Pausar' : 'Reproducir'}
-      </button>
+      <ReactPlayer url={streamUrl} playing={playing} controls width="100%" height="50px" />
     </div>
   );
-};
+}
 
 export default RadioPlayer;
