@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Text,
-  Heading,
   Button,
   useToast,
   IconButton,
   ChakraProvider,
   Container,
   Input,
+  Switch,
+  FormLabel,
+  FormControl,
   Image,
   SimpleGrid,
   HStack,
+  Flex,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
@@ -21,14 +24,18 @@ const RadioBrowser = () => {
   const [currentStationUrl, setCurrentStationUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFavorites, setShowFavorites] = useState(false);
 
   const [favorites, setFavorites] = useState(() => {
     // Cargar favoritos del almacenamiento local al iniciar
+
     const localData = localStorage.getItem("favorites");
     console.log("Cargando favoritos", localData);
     return localData ? JSON.parse(localData) : [];
   });
   const toast = useToast();
+  const defaultImage =
+    "https://logo.com/image-cdn/images/kts928pd/production/b36725aaacffc347ce5339d6782fbfd731fa2de6-731x731.jpg?w=1080&q=72"; // Cambia esto por tu URL de imagen predeterminada
 
   useEffect(() => {
     fetch(
@@ -43,7 +50,7 @@ const RadioBrowser = () => {
       .then((data) => {
         // Asumiendo que `favicon` es una URL a la imagen de la estación,
         // filtramos solo las estaciones que tienen un favicon definido.
-        const stationsWithImages = data.filter((station) => station.favicon);
+        const stationsWithImages = data.filter((station) => station.name);
         setStations(stationsWithImages);
       })
       .catch((error) => {
@@ -84,11 +91,20 @@ const RadioBrowser = () => {
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     }
   };
-  const filteredStations = searchTerm
+
+  // Primero, filtra las estaciones según el término de búsqueda.
+  const filteredBySearchTerm = searchTerm
     ? stations.filter((station) =>
         station.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : stations;
+
+  // Luego, de ese conjunto filtrado, elige mostrar todas o solo las favoritas según el estado de showFavorites.
+  const stationsToShow = showFavorites
+    ? filteredBySearchTerm.filter((station) =>
+        favorites.some((fav) => fav.changeuuid === station.changeuuid)
+      )
+    : filteredBySearchTerm;
 
   return (
     <ChakraProvider>
@@ -100,32 +116,48 @@ const RadioBrowser = () => {
         overflow="hidden"
         bg="gray.50"
       >
-        <Heading textAlign={"center"} as="h3" size="lg" mb="4">
-          Tomillo radio
-        </Heading>
-        <Container>
-          <Input
-            placeholder="Buscar estación..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            mb="4"
-          />
+        {" "}
+        <Container maxW={"4xl"}>
+          <HStack spacing={5}>
+            <FormControl display="flex" alignItems="center">
+                <FormLabel htmlFor="favorites-switch" mb="0">
+                  Favoritos
+                </FormLabel>
+                <Switch
+                  id="favorites-switch"
+                  onChange={() => setShowFavorites(!showFavorites)}
+                  isChecked={showFavorites}
+                />
+              </FormControl>
+              <FormControl>
+              <Input
+              size={'sm'}
+                bg={"white"}
+                placeholder="Buscar estación..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              </FormControl>
+
+              
+          </HStack>
         </Container>
         <Container maxW={"4xl"}>
-          <ReactPlayer
-            url={currentStationUrl}
-            playing
-            controls
-            width="100%"
-            height="50px"
-          />
-          <SimpleGrid columns={[1, 2]} spacing="40px">
-            {filteredStations.map((station) => (
+          <Box p={4} color={"red"}>
+            <ReactPlayer
+              url={currentStationUrl}
+              playing
+              controls
+              width="100%"
+              height="50px"
+            />
+          </Box>
+
+          <SimpleGrid columns={[1, 2]} spacing={4}>
+            {stationsToShow.map((station) => (
               <Box
                 key={station.changeuuid}
                 p="5"
-                shadow="md"
-                borderWidth="1px"
                 bg="white"
                 gap={2}
                 width="full"
@@ -136,9 +168,15 @@ const RadioBrowser = () => {
                 <Box display="flex" alignItems="center">
                   {station.favicon && (
                     <Image
-                      src={station.favicon}
+                      src={station.favicon ? station.favicon : defaultImage}
                       alt={`Logo de ${station.name}`}
-                      boxSize="50px"
+                      boxSize="30px"
+                      fallbackSrc={defaultImage} // Usa esto si Chakra UI >= v1.4.0 para manejar errores de carga
+                      onError={(e) => {
+                        if (!e.target.src.endsWith(defaultImage)) {
+                          e.target.src = defaultImage; // Cambia a la imagen predeterminada si hay un error al cargar la imagen original
+                        }
+                      }}
                     />
                   )}
                   <Text ml="4" fontWeight="bold">
