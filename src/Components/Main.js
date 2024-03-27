@@ -17,10 +17,12 @@ import {
   HStack,
   VStack,
   Select,
+  theme,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
 import { FaPlay, FaStop } from "react-icons/fa";
+import { ImSpinner } from "react-icons/im";
 
 const RadioBrowser = () => {
   const [stations, setStations] = useState([]);
@@ -165,19 +167,25 @@ const RadioBrowser = () => {
   const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Box
-        
         maxW="100%"
-        position={'sticky'}
-        overflow={'scroll'}
-    height="100vh"
+        position={"sticky"}
+        overflow={"scroll"}
+        height="100vh"
         borderWidth="1px"
         borderRadius="lg"
         bg="#1A1A1A"
       >
         {" "}
-        <Container maxW={"4xl"} bgColor={"#d1e500"} p={4} position={'sticky'} top={0} zIndex={3}>
+        <Container
+          maxW={"4xl"}
+          bgColor={"#d1e500"}
+          p={4}
+          position={"sticky"}
+          top={0}
+          zIndex={3}
+        >
           <Box
             display={"flex"}
             alignItems={"center"}
@@ -196,9 +204,13 @@ const RadioBrowser = () => {
             </FormControl>
             <FormControl>
               <Input
+               bg={'white'}
+       
                 size={"sm"}
-                bg={"white"}
+                border={0}
+
                 placeholder="Buscar estación..."
+                _placeholder={{ color: "black" }}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -210,6 +222,8 @@ const RadioBrowser = () => {
                   <Select
                     w={"100%"}
                     bg={"white"}
+             
+                    border={0}
                     size={"sm"}
                     placeholder="Seleccione un país"
                     onChange={(e) => setSelectedCountry(e.target.value)}
@@ -243,6 +257,7 @@ const RadioBrowser = () => {
             <ReactPlayer
               url={currentStationUrl}
               playing={isPlaying !== ""}
+              controls 
               style={{ bg: "black" }}
               width="100%"
               border={"1px solid red"}
@@ -264,9 +279,9 @@ const RadioBrowser = () => {
                 _hover={{
                   bg: "whiteAlpha.300",
                   color: "#1a1a1a",
-                  textDecoration: "underline",
+                  fontWeight: "bold",
+                  filter: "blur(0px)", // Elimina el desenfoque al hacer hover
                 }}
-                transition="all 0.2s ease-in-out"
                 width="full"
                 display={"flex"}
                 alignItems={"center"}
@@ -286,9 +301,8 @@ const RadioBrowser = () => {
                       }}
                     />
                   )}
-                  <Text ml="4" fontWeight="bold">
-                    {station.name}
-                  </Text>
+
+                  <Text fontSize={'sm'} ml="4">{station.name}</Text>
                   {/* Otros elementos de la estación */}
                 </Box>
                 <HStack>
@@ -346,11 +360,12 @@ const RadioBrowser = () => {
             ))}
           </SimpleGrid>
           <Button
-            colorScheme="red"
+            colorScheme="purple"
             m={4}
             onClick={() => setOffset(offset + limit)}
           >
             Cargar más
+
           </Button>
         </Container>
       </Box>
