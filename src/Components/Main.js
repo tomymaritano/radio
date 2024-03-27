@@ -38,15 +38,15 @@ const RadioBrowser = () => {
     console.log("Cargando favoritos", localData);
     return localData ? JSON.parse(localData) : [];
   });
+useEffect(() => {
+  fetch("https://de1.api.radio-browser.info/json/countries")
+    .then((response) => response.json())
+    .then((data) => {
+      setCountries(data.map(country => ({ name: country.name, id: country.stationcount }))); // Asumiendo que quieres usar `stationcount` como id, ajusta según sea necesario
+    })
+    .catch((error) => console.error("Error fetching countries:", error));
+}, []);
 
-  useEffect(() => {
-    fetch("https://de1.api.radio-browser.info/json/countries")
-      .then((response) => response.json())
-      .then((data) => {
-        setCountries(data);
-      })
-      .catch((error) => console.log("Error fetching countries:", error));
-  }, []);
 
   const toast = useToast();
   const defaultImage =
@@ -113,35 +113,37 @@ const toggleFavorite = (station) => {
   localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
   console.log(updatedFavorites)
 };
+
 useEffect(() => {
-  const handleSearch = (searchTerm) => {
-    const stationsPerPage = 20;
-    const offset = 0;
-  
-    let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${stationsPerPage}&offset=${offset}&`;
-  
-    if (selectedCountry) {
-      searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
-    }
-  
-    if (searchTerm) {
-      searchUrl += `name=${encodeURIComponent(searchTerm)}`;
-    }
-  
-    fetch(searchUrl)
-      .then(response => response.json())
-      .then(data => {
-        setStations(data);
-      })
-      .catch(error => console.error("Error fetching stations:", error));
-  };
+  // Solo busca estaciones si no estamos mostrando favoritos
+  if (!showFavorites) {
+    const handleSearch = () => {
+      let searchUrl = `https://de1.api.radio-browser.info/json/stations/search?limit=${limit}&offset=${offset}&`;
 
-  const timerId = setTimeout(() => {
-    handleSearch(searchTerm);
-  }, 500);
+      if (selectedCountry) {
+        searchUrl += `country=${encodeURIComponent(selectedCountry)}&`;
+      }
 
-  return () => clearTimeout(timerId);
-}, [searchTerm, selectedCountry]);
+      if (searchTerm) {
+        searchUrl += `name=${encodeURIComponent(searchTerm)}`;
+      }
+
+      fetch(searchUrl)
+        .then(response => response.json())
+        .then(data => {
+          setStations(data);
+        })
+        .catch(error => console.error("Error fetching stations:", error));
+    };
+
+    const timerId = setTimeout(() => {
+      handleSearch();
+    }, 500);
+
+    return () => clearTimeout(timerId);
+  }
+}, [searchTerm, selectedCountry, showFavorites, limit, offset]);
+
 
 
   // Primero, filtra las estaciones según el término de búsqueda.
@@ -152,11 +154,8 @@ useEffect(() => {
     : stations;
 
   // Luego, de ese conjunto filtrado, elige mostrar todas o solo las favoritas según el estado de showFavorites.
-  const stationsToShow = showFavorites
-    ? filteredBySearchTerm.filter((station) =>
-        favorites.some((fav) => fav.stationuuid === station.stationuuid)
-      )
-    : filteredBySearchTerm;
+// Decide qué estaciones mostrar
+const stationsToShow = showFavorites ? favorites : filteredBySearchTerm;
 
   return (
     <ChakraProvider>
