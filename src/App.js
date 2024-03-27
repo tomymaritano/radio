@@ -9,6 +9,7 @@ import {
   ChakraProvider,
   Container,
   Input,
+  Image,
   SimpleGrid,
   HStack,
 } from "@chakra-ui/react";
@@ -39,7 +40,12 @@ const RadioBrowser = () => {
         }
         return response.json();
       })
-      .then((data) => setStations(data))
+      .then((data) => {
+        // Asumiendo que `favicon` es una URL a la imagen de la estación,
+        // filtramos solo las estaciones que tienen un favicon definido.
+        const stationsWithImages = data.filter((station) => station.favicon);
+        setStations(stationsWithImages);
+      })
       .catch((error) => {
         console.error("Error fetching data:", error);
         toast({
@@ -127,8 +133,19 @@ const RadioBrowser = () => {
                 alignItems={"center"}
                 justifyContent={"space-between"}
               >
-                <Text fontWeight="bold">{station.name}</Text>
-
+                <Box display="flex" alignItems="center">
+                  {station.favicon && (
+                    <Image
+                      src={station.favicon}
+                      alt={`Logo de ${station.name}`}
+                      boxSize="50px"
+                    />
+                  )}
+                  <Text ml="4" fontWeight="bold">
+                    {station.name}
+                  </Text>
+                  {/* Otros elementos de la estación */}
+                </Box>
                 <HStack>
                   <Button
                     size={"sm"}
