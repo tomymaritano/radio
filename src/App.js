@@ -54,12 +54,12 @@ const RadioBrowser = () => {
   };
 
   const toggleFavorite = (station) => {
-    const isFavorite = favorites.some((fav) => fav.id === station.id);
+    const isFavorite = favorites.some((fav) => fav.changeuuid === station.changeuuid);
     if (isFavorite) {
       // Si ya es favorito, lo removemos de la lista de favoritos.
-      const updatedFavorites = favorites.filter((fav) => fav.id !== station.id);
+      const updatedFavorites = favorites.filter((fav) => fav.changeuuid !== station.changeuuid);
       setFavorites(updatedFavorites);
-      console.log("Toggling favorite for station", station.id);
+      console.log("Toggling favorite for station", station.changeuuid);
 
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
 console.log("Favoritos guardados", localStorage.getItem("favorites"));
