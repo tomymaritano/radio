@@ -14,7 +14,6 @@ import {
   Image,
   SimpleGrid,
   HStack,
-  Flex,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
