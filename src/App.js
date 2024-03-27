@@ -29,6 +29,15 @@ function App() {
       url: "http://stream0.wfmu.org/freeform-128k",
       img: "https://radiotoday.co.uk/wp-content/uploads/2023/01/1000radioplayer.jpg",
     },
+    {
+      name: "Music For Work",
+      url: "https://www.youtube.com/watch?v=ofXre8MuI9A",
+    },
+    {
+      name: "Deep Music",
+      url: "https://www.youtube.com/watch?v=8onzNnr5Z9o",
+    },
+    { name: "Chill Music", url: "https://www.youtube.com/watch?v=UbEpM-VwOU8" },
   ];
 
   const [currentRadioUrl, setCurrentRadioUrl] = useState(radios[0].url); // Estado para manejar la URL de la radio actual
