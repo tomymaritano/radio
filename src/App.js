@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Text,
-  VStack,
   Heading,
   Button,
   useToast,
@@ -32,7 +31,7 @@ const RadioBrowser = () => {
 
   useEffect(() => {
     fetch(
-      "https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/ar?limit=20"
+      "https://de1.api.radio-browser.info/json/stations/bycountrycodeexact/ar"
     )
       .then((response) => {
         if (!response.ok) {
