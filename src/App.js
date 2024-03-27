@@ -20,6 +20,7 @@ const RadioBrowser = () => {
   const [favorites, setFavorites] = useState(() => {
     // Cargar favoritos del almacenamiento local al iniciar
     const localData = localStorage.getItem("favorites");
+    console.log("Cargando favoritos", localData);
     return localData ? JSON.parse(localData) : [];
   });
   const toast = useToast();
@@ -61,6 +62,8 @@ const RadioBrowser = () => {
       console.log("Toggling favorite for station", station.id);
 
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+console.log("Favoritos guardados", localStorage.getItem("favorites"));
+
     } else {
       // Si no es favorito, lo agregamos a la lista de favoritos.
       const updatedFavorites = [...favorites, station];
@@ -103,6 +106,8 @@ const RadioBrowser = () => {
               width="full"
             >
               <Text fontWeight="bold">{station.name}</Text>
+              <Text>{station.serveruuid}</Text>
+              
               <Button
                 mr={1}
                 size={"sm"}
@@ -110,7 +115,7 @@ const RadioBrowser = () => {
                 onClick={() => playStation(station.url, station.changeuuid)}
                 mt="2"
               >
-                {isPlaying === station.changeuuid ? "Playing" : "Play"}
+                {isPlaying === station.changeuuid ? "Reproduciendo" : "Reproducir"}
               </Button>
               <IconButton
               size={'sm'}
