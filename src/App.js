@@ -2,19 +2,25 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Text,
-  HStack,
+  VStack,
   Heading,
   Button,
   useToast,
+  IconButton,
   ChakraProvider,
-  VStack,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
+import { StarIcon } from "@chakra-ui/icons";
 
 const RadioBrowser = () => {
   const [stations, setStations] = useState([]);
   const [currentStationUrl, setCurrentStationUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState("");
+  const [favorites, setFavorites] = useState(() => {
+    // Cargar favoritos del almacenamiento local al iniciar
+    const localData = localStorage.getItem("favorites");
+    return localData ? JSON.parse(localData) : [];
+  });
   const toast = useToast();
 
   useEffect(() => {
@@ -45,6 +51,21 @@ const RadioBrowser = () => {
     setIsPlaying(id);
   };
 
+  const toggleFavorite = (station) => {
+    const isFavorite = favorites.some((fav) => fav.id === station.id);
+    if (isFavorite) {
+      // Si ya es favorito, lo removemos de la lista de favoritos.
+      const updatedFavorites = favorites.filter((fav) => fav.id !== station.id);
+      setFavorites(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    } else {
+      // Si no es favorito, lo agregamos a la lista de favoritos.
+      const updatedFavorites = [...favorites, station];
+      setFavorites(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    }
+  };
+
   return (
     <ChakraProvider>
       <Box
@@ -56,9 +77,8 @@ const RadioBrowser = () => {
         bg="gray.50"
       >
         <Heading as="h3" size="lg" mb="4">
-          Radio Stations
+          Tomillo radio
         </Heading>
-        {/* ReactPlayer Component */}
         <ReactPlayer
           url={currentStationUrl}
           playing
@@ -74,18 +94,31 @@ const RadioBrowser = () => {
               shadow="md"
               borderWidth="1px"
               bg="white"
+              gap={2}
               width="full"
             >
-              <Text fontWeight="bold" fontSize={'sm'}>{station.name}</Text>
-            
+              <Text fontWeight="bold">{station.name}</Text>
               <Button
-              size={'sm'}
+                mr={1}
+                size={"sm"}
                 colorScheme={isPlaying === station.id ? "red" : "blue"}
                 onClick={() => playStation(station.url, station.id)}
                 mt="2"
               >
                 {isPlaying === station.id ? "Playing" : "Play"}
               </Button>
+              <IconButton
+              size={'sm'}
+                aria-label="Favorite"
+                icon={<StarIcon />}
+                colorScheme={
+                  favorites.some((fav) => fav.id === station.id)
+                    ? "yellow"
+                    : "gray"
+                }
+                onClick={() => toggleFavorite(station)}
+                mt="2"
+              />
             </Box>
           ))}
         </VStack>
