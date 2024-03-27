@@ -21,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { StarIcon } from "@chakra-ui/icons";
 import { FaPlay, FaStop } from "react-icons/fa";
+import ReactPlayer from 'react-player'
 
 const RadioBrowser = () => {
   const [stations, setStations] = useState([]);
@@ -251,7 +252,7 @@ const RadioBrowser = () => {
         </Container>
         <Container maxW={"4xl"} bg={"whiteAlpha.100"}>
           <Box p={4} color={"red"}>
-            <audio
+            <ReactPlayer
               url={currentStationUrl}
               playing={isPlaying !== ""}
               controls
