@@ -9,6 +9,9 @@ import {
   IconButton,
   ChakraProvider,
   Container,
+  Input,
+  SimpleGrid,
+  HStack,
 } from "@chakra-ui/react";
 import ReactPlayer from "react-player";
 import { StarIcon } from "@chakra-ui/icons";
@@ -17,6 +20,8 @@ const RadioBrowser = () => {
   const [stations, setStations] = useState([]);
   const [currentStationUrl, setCurrentStationUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [favorites, setFavorites] = useState(() => {
     // Cargar favoritos del almacenamiento local al iniciar
     const localData = localStorage.getItem("favorites");
@@ -54,16 +59,19 @@ const RadioBrowser = () => {
   };
 
   const toggleFavorite = (station) => {
-    const isFavorite = favorites.some((fav) => fav.changeuuid === station.changeuuid);
+    const isFavorite = favorites.some(
+      (fav) => fav.changeuuid === station.changeuuid
+    );
     if (isFavorite) {
       // Si ya es favorito, lo removemos de la lista de favoritos.
-      const updatedFavorites = favorites.filter((fav) => fav.changeuuid !== station.changeuuid);
+      const updatedFavorites = favorites.filter(
+        (fav) => fav.changeuuid !== station.changeuuid
+      );
       setFavorites(updatedFavorites);
       console.log("Toggling favorite for station", station.changeuuid);
 
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-console.log("Favoritos guardados", localStorage.getItem("favorites"));
-
+      console.log("Favoritos guardados", localStorage.getItem("favorites"));
     } else {
       // Si no es favorito, lo agregamos a la lista de favoritos.
       const updatedFavorites = [...favorites, station];
@@ -71,70 +79,87 @@ console.log("Favoritos guardados", localStorage.getItem("favorites"));
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
     }
   };
+  const filteredStations = searchTerm
+    ? stations.filter((station) =>
+        station.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : stations;
 
   return (
     <ChakraProvider>
       <Box
-  
         padding="4"
-        maxW="xl"
+        maxW="100%"
         borderWidth="1px"
         borderRadius="lg"
         overflow="hidden"
-        bg="black"
+        bg="gray.50"
       >
-        <Container>
-          <Heading textAlign={'center'} as="h3" size="lg" mb="4">
+        <Heading textAlign={"center"} as="h3" size="lg" mb="4">
           Tomillo radio
         </Heading>
-        <ReactPlayer
-          url={currentStationUrl}
-          playing
-          controls
-          width="100%"
-          height="50px"
-        />
-        <VStack spacing="4" mt="4">
-          {stations.map((station) => (
-            <Box
-              key={station.changeuuid}
-              p="5"
-              shadow="md"
-              borderWidth="1px"
-              bg="white"
-              gap={2}
-              width="full"
-            >
-              <Text fontWeight="bold">{station.name}</Text>
-              <Text>{station.serveruuid}</Text>
-              
-              <Button
-                mr={1}
-                size={"sm"}
-                colorScheme={isPlaying === station.changeuuid ? "red" : "blue"}
-                onClick={() => playStation(station.url, station.changeuuid)}
-                mt="2"
-              >
-                {isPlaying === station.changeuuid ? "Reproduciendo" : "Reproducir"}
-              </Button>
-              <IconButton
-              size={'sm'}
-                aria-label="Favorite"
-                icon={<StarIcon />}
-                colorScheme={
-                  favorites.some((fav) => fav.changeuuid === station.changeuuid)
-                    ? "yellow"
-                    : "gray"
-                }
-                onClick={() => toggleFavorite(station)}
-                mt="2"
-              />
-              
-            </Box>
-          ))}
-        </VStack>
+        <Container>
+          <Input
+            placeholder="Buscar estación..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            mb="4"
+          />
         </Container>
-        
+        <Container maxW={"4xl"}>
+          <ReactPlayer
+            url={currentStationUrl}
+            playing
+            controls
+            width="100%"
+            height="50px"
+          />
+          <SimpleGrid columns={[1, 2]} spacing="40px">
+            {filteredStations.map((station) => (
+              <Box
+                key={station.changeuuid}
+                p="5"
+                shadow="md"
+                borderWidth="1px"
+                bg="white"
+                gap={2}
+                width="full"
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+              >
+                <Text fontWeight="bold">{station.name}</Text>
+
+                <HStack>
+                  <Button
+                    size={"sm"}
+                    colorScheme={
+                      isPlaying === station.changeuuid ? "teal" : "facebook"
+                    }
+                    onClick={() => playStation(station.url, station.changeuuid)}
+                  >
+                    {isPlaying === station.changeuuid
+                      ? "Reproduciendo"
+                      : "Reproducir"}
+                  </Button>
+                  <IconButton
+                    size={"sm"}
+                    aria-label="Favorite"
+                    icon={<StarIcon />}
+                    colorScheme={
+                      favorites.some(
+                        (fav) => fav.changeuuid === station.changeuuid
+                      )
+                        ? "yellow"
+                        : "gray"
+                    }
+                    onClick={() => toggleFavorite(station)}
+                  />
+                </HStack>
+              </Box>
+            ))}
+          </SimpleGrid>
+        </Container>
       </Box>
     </ChakraProvider>
   );
