@@ -213,15 +213,8 @@ const RadioBrowser = () => {
           top={0}
           zIndex={3}
         >
-          <Box
-            display="flex"
-            flexDirection={{ base: "column", md: "row" }} // 'base' es para móviles, 'md' es para tablets y arriba
-            gap={{ base: "5", md: "2" }} // Añade más espacio en móvil y menos en pantallas más grandes
-            justifyContent={{ base: "flex-start", md: "space-evenly" }} // Alinea al comienzo en móviles, distribuye de forma equitativa en pantallas más grandes
-            alignItems={{ base: "flex-start", md: "center" }} // Alinea al comienzo en móviles, centra en pantallas más grandes
-            width="100%"
-          >
-            <FormControl display="flex" alignItems="center">
+          <Box mb={4}>
+                        <FormControl display="flex" alignItems="center">
               <FormLabel htmlFor="favorites-switch" mb="0" color={"white"}>
                 Favoritos
               </FormLabel>
@@ -231,8 +224,18 @@ const RadioBrowser = () => {
                 isChecked={showFavorites}
               />
             </FormControl>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection={{ base: "row", md: "row" }} // 'base' es para móviles, 'md' es para tablets y arriba
+            gap={{ base: "3", md: "2" }} // Añade más espacio en móvil y menos en pantallas más grandes
+            justifyContent={{ base: "flex-start", md: "space-evenly" }} // Alinea al comienzo en móviles, distribuye de forma equitativa en pantallas más grandes
+            alignItems={{ base: "flex-start", md: "center" }} // Alinea al comienzo en móviles, centra en pantallas más grandes
+            width="100%"
+          >
+
             <FormControl>
-              <Input
+              <Input w={{base: '100%', md: '100%'}}
                 bg={"white"}
                 size={"sm"}
                 border={0}
@@ -244,11 +247,12 @@ const RadioBrowser = () => {
             </FormControl>
 
             <Container maxW={"sm"}>
-              <VStack spacing={5}>
+              <VStack spacing={2}>
                 {/* Menú desplegable para seleccionar país */}
                 <FormControl>
                   <Select
-                    w={"100%"}
+                   w={{base: '100%', md: '100%'}}
+      
                     bg={"white"}
                     border={0}
                     size={"sm"}
