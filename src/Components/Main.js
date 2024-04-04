@@ -19,12 +19,13 @@ import {
   Select,
   theme,
 } from "@chakra-ui/react";
-import { StarIcon } from "@chakra-ui/icons";
+import { DownloadIcon, StarIcon } from "@chakra-ui/icons";
 import { FaPlay, FaStop } from "react-icons/fa";
-import ReactPlayer from 'react-player'
+import ReactPlayer from "react-player";
 
 const RadioBrowser = () => {
-const [stations, setStations] = useState([]);  const [currentStationUrl, setCurrentStationUrl] = useState("");
+  const [stations, setStations] = useState([]);
+  const [currentStationUrl, setCurrentStationUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
@@ -39,7 +40,37 @@ const [stations, setStations] = useState([]);  const [currentStationUrl, setCurr
     console.log("Cargando favoritos", localData);
     return localData ? JSON.parse(localData) : [];
   });
+  const [installPrompt, setInstallPrompt] = useState(null);
 
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
+
+  const handleInstallClick = () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the install prompt");
+        } else {
+          console.log("User dismissed the install prompt");
+        }
+        setInstallPrompt(null);
+      });
+    }
+  };
   useEffect(() => {
     fetch("https://de1.api.radio-browser.info/json/countries")
       .then((response) => response.json())
@@ -211,6 +242,7 @@ const [stations, setStations] = useState([]);  const [currentStationUrl, setCurr
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </FormControl>
+
             <Container maxW={"sm"}>
               <VStack spacing={5}>
                 {/* Menú desplegable para seleccionar país */}
@@ -242,9 +274,27 @@ const [stations, setStations] = useState([]);  const [currentStationUrl, setCurr
                       ))}
                   </Select>
                 </FormControl>
+
                 {/* Continúa con los demás elementos de UI como antes... */}
               </VStack>
             </Container>
+
+            <Box>
+              {installPrompt && (
+                <Button
+                  rounded={"full"}
+                  _hover={{
+                    bg: "whiteAlpha.100",
+                    color: "white",
+                  }}
+                  bg={"#e00091"}
+                  size={"sm"}
+                  onClick={handleInstallClick}
+                >
+                  <DownloadIcon />
+                </Button>
+              )}
+            </Box>
           </Box>
         </Container>
         <Container maxW={"4xl"} bg={"whiteAlpha.100"}>
@@ -357,15 +407,15 @@ const [stations, setStations] = useState([]);  const [currentStationUrl, setCurr
             ))}
           </SimpleGrid>
           <Button
-          size={'sm'}
+            size={"sm"}
             colorScheme="purple"
             m={4}
             onClick={() => setOffset(offset + limit)}
           >
             Cargar más
           </Button>
-           <Button
-          size={'sm'}
+          <Button
+            size={"sm"}
             colorScheme="purple"
             m={4}
             onClick={() => setOffset(offset - limit)}
