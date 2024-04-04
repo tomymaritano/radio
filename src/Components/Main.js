@@ -24,8 +24,7 @@ import { FaPlay, FaStop } from "react-icons/fa";
 import ReactPlayer from 'react-player'
 
 const RadioBrowser = () => {
-  const [stations, setStations] = useState([]);
-  const [currentStationUrl, setCurrentStationUrl] = useState("");
+const [stations, setStations] = useState([]);  const [currentStationUrl, setCurrentStationUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
@@ -172,8 +171,6 @@ const RadioBrowser = () => {
         position={"sticky"}
         overflow={"scroll"}
         height="100vh"
-        borderWidth="1px"
-        borderRadius="lg"
         bg="#1A1A1A"
       >
         {" "}
@@ -366,6 +363,14 @@ const RadioBrowser = () => {
             onClick={() => setOffset(offset + limit)}
           >
             Cargar más
+          </Button>
+           <Button
+          size={'sm'}
+            colorScheme="purple"
+            m={4}
+            onClick={() => setOffset(offset - limit)}
+          >
+            Volver
           </Button>
         </Container>
       </Box>
