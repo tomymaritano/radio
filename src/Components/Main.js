@@ -20,6 +20,7 @@ import {
   theme,
 } from "@chakra-ui/react";
 import { DownloadIcon, StarIcon } from "@chakra-ui/icons";
+
 import { FaPlay, FaStop } from "react-icons/fa";
 import ReactPlayer from "react-player";
 
@@ -291,7 +292,7 @@ const RadioBrowser = () => {
                     bg: "whiteAlpha.100",
                     color: "white",
                   }}
-                  bg={"#e00091"}
+                  colorScheme={"purple"}
                   size={"sm"}
                   onClick={handleInstallClick}
                 >
